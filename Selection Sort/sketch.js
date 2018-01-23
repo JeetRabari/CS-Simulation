@@ -35,6 +35,7 @@ function setup () {
 
 function draw () {
   background(51);
+  drawName();
   drawColorCode();
   if(isStart){
     fr = slider.value();
@@ -48,6 +49,12 @@ function draw () {
   printArrayBar(array);
 }
 
+function drawName(){
+  textFont('monospace');
+  textSize(25);
+  text("Selection Sort", 15, 40);
+  fill(100);
+}
 function pauseSim(){
   isStart = false;
   document.getElementById('randomize').disabled = false;
