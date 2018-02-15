@@ -29,8 +29,9 @@ function setup () {
   slider = createSlider(1,30,1,1);
 
 
-  selectionSort();
-  //console.log(snapShots);
+  bubbleSort();
+  console.log(snapShots);
+  console.log(ary);
 }
 
 function draw () {
@@ -41,7 +42,7 @@ function draw () {
     fr = slider.value();
     frameRate(fr);
     if(curSnapShot < snapShots.length){
-    console.log(curSnapShot);
+    //console.log(curSnapShot);
     array = snapShots[curSnapShot];
     curSnapShot++;
     }
@@ -52,7 +53,7 @@ function draw () {
 function drawName(){
   textFont('monospace');
   textSize(25);
-  text("Selection Sort", 15, 40);
+  text("Bubble Sort", 15, 40);
   fill(100);
 }
 function pauseSim(){
@@ -78,39 +79,74 @@ function prevStep(){
 }
 }
 
-function takeSnapeShot(previMin,prevProc,index,newState){
-  if(prevProc !=-1){if(ary[prevProc].state == 3){ary[prevProc].state = 0;}}
-  if(previMin != -1){ary[previMin].state = 0;}
-  ary[index].state = newState;
-  snapShots.push(JSON.parse(JSON.stringify(ary)));
+function takeSnapeShot(curEmt,nxtEmt,curState,nxtState)
+{
+	// if(curEmt!=0){
+		// ary[curEmt-1].state = 1;
+		// ary[nxtEmt-1].state = 1;
+	// }
+	for(var i=0;i<16;i++){
+		if(ary[i].state!=3){
+			ary[i].state = 0;
+		}
+	}
+	if(ary[curEmt].state!=3)
+		ary[curEmt].state = curState;
+	if(ary[nxtEmt].state!=3)
+		ary[nxtEmt].state = nxtState;
+	snapShots.push(JSON.parse(JSON.stringify(ary)));
 }
+// function takeSnapeShot(previMin,prevProc,index,newState){
+	
+  // if(prevProc !=-1){if(ary[prevProc].state == 3){ary[prevProc].state = 0;}}
+  // if(previMin != -1){ary[previMin].state = 0;}
+  // ary[index].state = newState;
+  // snapShots.push(JSON.parse(JSON.stringify(ary)));
+// }
 
 
-function selectionSort(){
-  var iMin;
+function bubbleSort(){
+	var p,q;
+	for(var i=0;i<ary.length-1;i++){
+		for(var j=0;j<ary.length-1;j++){
+			p=j
+			q=j+1
+			takeSnapeShot(p,q,1,1);
+			if(ary[p].element>ary[q].element)
+			{
+				var temp1=ary[p].element;
+				ary[p].element=ary[q].element;
+				ary[q].element=temp1;
+				takeSnapeShot(p,q,2,2);
+			}
+		}
+		takeSnapeShot(p,15-i,2,3);
+	}
+	takeSnapeShot(0,0,3,3);
+  // var iMin;
 
-  for(var i = 0 ; i < ary.length-1 ; i++){
-    iMin = i;
-    takeSnapeShot(-1,i-1,iMin,1);
-    for(var j = i+1 ; j < ary.length ; j++){
-      takeSnapeShot(-1,j-1,j,3);
-      if(ary[j].element < ary[iMin].element){
-        takeSnapeShot(iMin,j-1,j,1);
-        iMin = j;
-      }
+  // for(var i = 0 ; i < ary.length-1 ; i++){
+    // iMin = i;
+    // takeSnapeShot(-1,i-1,iMin,1);
+    // for(var j = i+1 ; j < ary.length ; j++){
+      // takeSnapeShot(-1,j-1,j,3);
+      // if(ary[j].element < ary[iMin].element){
+        // takeSnapeShot(iMin,j-1,j,1);
+        // iMin = j;
+      // }
 
-    }
-    takeSnapeShot(-1,j-1,j-1,0);
-    if(iMin != i){
-      var temp = ary[i].element;
-      ary[i].element = ary[iMin].element;
-      ary[iMin].element = temp;
-      takeSnapeShot(iMin,-1,i,2);
-    }else{
-      takeSnapeShot(iMin,-1,i,2);
-    }
-  }
-  takeSnapeShot(-1,-1,ary.length-1,2);
+    // }
+    // takeSnapeShot(-1,j-1,j-1,0);
+    // if(iMin != i){
+      // var temp = ary[i].element;
+      // ary[i].element = ary[iMin].element;
+      // ary[iMin].element = temp;
+      // takeSnapeShot(iMin,-1,i,2);
+    // }else{
+      // takeSnapeShot(iMin,-1,i,2);
+    // }
+  // }
+  // takeSnapeShot(-1,-1,ary.length-1,2);
 }
 
 
@@ -132,19 +168,19 @@ function drawColorCode(){
   rect(windowWidth-windowWidth/4,windowHeight/8,50,30);
   fill(250);
   textSize(16);
-  text(" - Red is current min.",windowWidth-windowWidth/4 + 70,windowHeight/8 + 17);
+  text(" - Red is current items.",windowWidth-windowWidth/4 + 70,windowHeight/8 + 17);
 
   fill('#50d0ff');
   rect(windowWidth-windowWidth/4,windowHeight/8 + 50,50,30);
   fill(250);
   textSize(16);
-  text(" - Blue is sorted.",windowWidth-windowWidth/4 + 70,windowHeight/8 + 50 + 17);
+  text(" - Blue is swaped items.",windowWidth-windowWidth/4 + 70,windowHeight/8 + 50 + 17);
 
   fill('#90ff50');
   rect(windowWidth-windowWidth/4,windowHeight/8 + 100,50,30);
   fill(250);
   textSize(16);
-  text(" - Green is current item.",windowWidth-windowWidth/4 + 70,windowHeight/8 + 100 + 17);
+  text(" - Green is sorted items.",windowWidth-windowWidth/4 + 70,windowHeight/8 + 100 + 17);
 }
 
 function randomizeArray () {
@@ -155,7 +191,7 @@ function randomizeArray () {
   ary = JSON.parse(JSON.stringify(array));
   snapShots.length = 0;
   curSnapShot = 0;
-  selectionSort();
+  bubbleSort();
 }
 
 function printArrayBar (array) {
