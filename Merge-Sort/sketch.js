@@ -1,5 +1,8 @@
-var a = [10, 50, 2, 40, 15, 47, 23, 8, 49, 27, 13, 40, 35, 17, 30, 19];
+//var a = [10, 50, 2, 40, 15, 47, 23, 8, 49, 27, 13, 40, 35, 17, 30, 19];
+
+//instructions are pushed in this array
 var program = [];
+//var levelEl = [1,4,4,4];
 
 //level-0 elements
 var c01 = new coordinate(562,100);
@@ -43,102 +46,205 @@ var c38 = new coordinate(1176,490);
 
 
 //element
-var e1 = new element(c01,10,1);
-var e2 = new element(c02,5,1);
-var e3 = new element(c03,15,1);
-var e4 = new element(c04,11,1);
+var e1 = new element(c01,99,1);
+var e2 = new element(c02,12,1);
+var e3 = new element(c03,97,1);
+var e4 = new element(c04,54,1);
 var e5 = new element(c05,6,1);
-var e6 = new element(c06,8,1);
+var e6 = new element(c06,89,1);
 var e7 = new element(c07,63,1);
-var e8 = new element(c08,54,1);
+var e8 = new element(c08,99,1);
 
-//arrays for each level
+var e11 = new element(c01,99,1);
+var e12 = new element(c02,12,1);
+var e13 = new element(c03,97,1);
+var e14 = new element(c04,54,1);
+var e15 = new element(c05,6,1);
+var e16 = new element(c06,89,1);
+var e17 = new element(c07,63,1);
+var e18 = new element(c08,99,1);
+
+//array0 points to another array but both have same data
+// array1 , array2 points to different arrays
 var array0 = [e1,e2,e3,e4,e5,e6,e7,e8];
-var array1 = [e1,e2,e3,e4,e5,e6,e7,e8];
-var array2 = [];
-var array3 = [e2];
+var array1 = [e11,e12,e13,e14,e15,e16,e17,e18];
+var array2 = JSON.parse(JSON.stringify(array1));
+
 var randomize;
 var next, previous, reset;
 
 //variable for allowing only one time animation
 
 var ii = 1, jj = 1, n = 16;
-var counter=0;
+var button,isStart = false;
 
 function setup () {
   createCanvas(windowWidth, windowHeight - 40);
+  button = createButton('Next');
+  //button.position(40,windowHeight-60);
+  button.mousePressed(next);
+  //button.attribute('disabled','');
+  button.id('next');
+  document.getElementById('next').disabled = true;
 
-  merge_sort(a,0,15);
-  console.log(program);
+  randomize = createButton("Randomize Array");
+  randomize.mouseClicked(randomizeArray);
+  randomize.id('randomize');
+
+  // previous = createButton("Previous Step");
+  // previous.mouseClicked(prevStep);
+  // previous.id('prev');
+  // document.getElementById('prev').disabled = true;
+
+  reset = createButton("Reset");
+  reset.mouseClicked(resetFun);
+
+  stBtn = createButton("Start");
+  stBtn.mouseClicked(startFun);
+}
+
+function startFun()
+{
+  isStart = true;
+}
+
+function next(){
+  curSnap = curSnap + 3 ;
+  curInstr = curInstr + 1;
+  animationTime = 0;
+  flag1 = true;
+  tempc = 0;
+  //document.getElementById('prev').disabled = false;
+  //console.log(curSnap);
+}
+function prevStep()
+{
+  curSnap = curSnap - 3 ;
+  curInstr = curInstr - 1;
+  animationTime = 0;
+  flag1 = true;
+  tempc = 0;
+  if(curSnap==0)
+  document.getElementById('prev').disabled = true;
 
 }
-var x=612,y=230,i=1,curInstr=0;
+function randomizeArray () {
+  resetFun();
+  for (var i = 0; i < 8; i++) {
+    array2[i].val = array1[i].val = array0[i].val = Math.floor(Math.random() * 99 + 1);
+  }
+  //reset();
+}
+function resetFun()
+{
+   e1 = new element(c01,99,1);
+   e2 = new element(c02,12,1);
+   e3 = new element(c03,97,1);
+   e4 = new element(c04,54,1);
+   e5 = new element(c05,6,1);
+   e6 = new element(c06,89,1);
+   e7 = new element(c07,63,1);
+   e8 = new element(c08,99,1);
+
+   e11 = new element(c01,99,1);
+   e12 = new element(c02,12,1);
+   e13 = new element(c03,97,1);
+   e14 = new element(c04,54,1);
+   e15 = new element(c05,6,1);
+   e16 = new element(c06,89,1);
+   e17 = new element(c07,63,1);
+   e18 = new element(c08,99,1);
+
+   array0 = [e1,e2,e3,e4,e5,e6,e7,e8];
+   array1 = [e11,e12,e13,e14,e15,e16,e17,e18];
+   array2 = JSON.parse(JSON.stringify(array1));
+   curSnap = 0;
+   curInstr = 0;
+   program = [];
+   document.getElementById('next').disabled = true;
+   //document.getElementById('prev').disabled = true;
+   x=612;y=230;i=1;tempc = 0;
+   counter = 0;is=true; animationTime = 0;flag1 = false;
+   count = 1;
+   snapShots = [];
+   isStart = false;
+   redraw();
+}
+
+var x=612,y=230,i=1,curSnap=0,curInstr=0,tempc = 0;
+//is : this var is used to call mergesort only once.
+var counter = 0,is=true, animationTime = 0,flag1 = false;
 function draw () {
   background(51);
-  frameRate(30);
-  showArray(array0);
-  showArray(array1);
-  showArray(array2);
-  showArray(array3);
+    frameRate(30);
+    if(isStart){
 
-// //  if(i==1){
-//     staticSplit1();
-// //  }else if(i==2){staticSplit2();}
-// console.log(program[curInstr]);
-//   if(program[curInstr].op==1){
-//
-//       for(var i = 0 ; i < program[curInstr].args.length;i++){
-//         var c = stringToObject("c1"+(i+1))
-//         animation(array1[program[curInstr].args[i]],c)
-//       }
-if(counter<5000)
+  if(counter<=4500){
+    showArray(array0);
+  }
+if(counter<1300)
 {staticSplit1();
 }
-console.log("counter:",counter);
-if(counter>=5000)
+
+if(counter>=1300 && counter<3000)
 {staticSplit2();
 }
+if(counter>=3000 && counter<= 4500)
+{
+  staticSplit3();
+}
+if(counter>=4500 && is==true)
+{
+  console.log(array0);
+  merge_sort(array0,0,7,0);
+  is = false;
+  console.log(snapShots);
+}
+if (counter>=4500) {
+   document.getElementById('next').disabled = false;
+  frameRate(1);
+  if (curSnap < snapShots.length) {
 
+    //if(tempc<180)
+    showArray(snapShots[curSnap]);
+    if(curSnap+1 <71 && tempc>180)
+    //overwrite conflict may occur
+    showArray(snapShots[curSnap+1]);
+    animation(program[curInstr].el,program[curInstr].loc);
+    showArray(snapShots[curSnap+2]);
+    tempc = tempc + 1;
+    // animationTime = animationTime + 1;
+    // if(animationTime > 130 || flag1 == true){
+    // showArray(snapShots[curSnap+1]);
+    // //snapShots[curSnap] = snapShots[curSnap + 1];
+    // }
+  }
+  else{
+    showArray(snapShots[71]);
+  }
+  // if(program[curInstr].el.x == program[curInstr].loc.x){
+  //   curSnap = curSnap + 2;
+  //   curInstr = curInstr + 1;
+  // }
+  if(curSnap>snapShots.length) {
+    noLoop();
+  }
+  }
+}else{
+  showArray(array0);
+}
 
-  
 
 
   //animation(e1,c12);
   //animation(e03,e13);
 //   frameRate(10);
-
-
 }
 
-function stringToObject(str){
-  console.log("ff");
-  if(str=="c11"){
-    return c11;
-  }
-  if(str=="c12"){
-    return c12;
-  }
-  if(str=="c13"){
-    return c13;
-  }
-  if(str=="c14"){
-    return c14;
-  }
-  if(str=="c15"){
-    return c15;
-  }
-  if(str=="c16"){
-    return c16;
-  }
-  if(str=="c17"){
-    return c17;
-  }if(str=="c18"){
-    return c18;
-  }
-}
 
 function staticSplit1(){
   animation(e1,c11);
+
   animation(e2,c12);
   animation(e3,c13);
   animation(e4,c14);
@@ -146,9 +252,10 @@ function staticSplit1(){
   animation(e6,c16);
   animation(e7,c17);
   animation(e8,c18);
+  line(757,80,757,160);
+
 //  pause();
 //  i = 2;
-staticSplit2();
 }
 
 function staticSplit2(){
@@ -161,7 +268,50 @@ function staticSplit2(){
   animation(e6,c26);
   animation(e7,c27);
   animation(e8,c28);
+  line(757,100,757,200);
+  line(584,220,584,300);
+
+  line(939,220,939,300);
 }
+function staticSplit3(){
+
+  animation(e1,c31);
+  e11.x = c31.x;
+  e11.y = c31.y;
+  animation(e2,c32);
+  e12.x = c32.x;
+  e12.y = c32.y;
+  animation(e3,c33);
+  e13.x = c33.x;
+  e13.y = c33.y;
+  animation(e4,c34);
+  e14.x = c34.x;
+  e14.y = c34.y;
+  animation(e5,c35);
+  e15.x = c35.x;
+  e15.y = c35.y;
+  animation(e6,c36);
+  e16.x = c36.x;
+  e16.y = c36.y;
+  animation(e7,c37);
+  e17.x = c37.x;
+  e17.y = c37.y;
+  animation(e8,c38);
+  e18.x = c38.x;
+  e18.y = c38.y;
+  line(757,100,757,200);
+  line(584,220,584,300);
+  line(939,220,939,300);
+  line(415,320,415,400);
+  line(415,320,415,400);
+  line(415,320,415,400);
+  line(415,320,415,400,);
+  line(629,320,629,400);
+  line(842,320,842,400);
+  line(1058,320,1058,400);
+
+}
+
 
 
 drawArray = function (ary,level){
@@ -182,7 +332,7 @@ drawArray = function (ary,level){
 
 
     rect(x,y,40,40);
-    console.log(x,y);
+
 
     textSize(15);
     text(array[i],x+15,y+25);
@@ -190,13 +340,42 @@ drawArray = function (ary,level){
 }
 
 function showArray(ary){
+
   for(var i = 0 ; i < ary.length ; i++){
     showElement(ary[i]);
   }
 }
 
+function showSnap(ary){
+  for(var i = 0 ; i < ary.length ; i++){
+    fill(e.col);
+      rect(e.x,e.y,40,40);
+     fill(255);
+      textSize(15);
+      text(e.val,e.x+15,e.y+25);
+  }
+}
+
 function showElement(e){
+  //console.log(e);
+  var c;
+  switch (e.col) {
+    case 1:{
+      c = color(0,0,0);
+      break;
+    }
+    case 2:{
+      c = color('red');
+      break;
+    }
+
+    default:
+      c = color('green');
+      break;
+  }
+  fill(c);
   rect(e.x,e.y,40,40);
+  fill(255);
   textSize(15);
   text(e.val,e.x+15,e.y+25);
 }
@@ -207,6 +386,8 @@ function animation(e1,e2){
   //console.log(e1);
    //console.log(e2);
   //
+  frameRate(50);
+  flag1 = false;
   var del_x = e2.x - e1.x;
   var del_y = e2.y - e1.y;
 
@@ -217,27 +398,10 @@ function animation(e1,e2){
 if(e1.x!=e2.x){
   e1.x = e1.x + cx;
   e1.y = e1.y + cy;
-  // var xflag,yflag;
-  // if(e2.x>e1.x)
-  // {
-  //   xflag = 1;
-  // }
-  // else {
-  //   xflag = -1;
-  // }
-  // if(e1.x<=e2.x)
-  // {
-  //   x = x+1;
-  // }
-  // if(e2.y>=e2.x)
-  // {
-  //   y = y-1;
-  // }
-  rect(e1.x,e1.y,40,40);
-  textSize(15);
-  text(e1.val,e1.x+15,e1.y+25);
+  showElement(e1);
 }
 counter = counter + 1;
+
 }
 
 function element(cor,val,col){
@@ -253,48 +417,530 @@ function coordinate(x,y){
 }
 
 
-function merge_sort(a,i,j){
+function merge_sort(ary,i,j,l){
   if(i<j){
     var mid = Math.floor((i+j)/2);
-    i = new instruction(1,[i,mid]);
-    program.push(i);
-    merge_sort(a,i,mid);
-    i = new instruction(1,[mid+1,j]);
-    program.push(i);
-    merge_sort(a,mid+1,j);
-    merge(a,i,mid,j);
+    merge_sort(ary,i,mid,l+1);
+    merge_sort(ary,mid+1,j,l+1);
+    merge(ary,i,mid,j,l);
   }
 }
-
-
-
-function merge(ary,p,q,r)
+var count = 1;
+var ll;
+function merge(ary,p,q,r,l)
 {
   var i,j,k;
   var n1 = q-p+2;
   var n2 = r-q+1;
   var leftAry = [];
   var rightAry = [];
-  for(i=0;i<n1;i++){
-    leftAry[i] = ary[p+i];
+  for(i=0;i<n1-1;i=i+1){
+    leftAry[i] = ary[p+i].val;
   }
-  for(j=0;j<n2;j++){
-    rightAry[j] = ary[q+j+1];
+  for(j=0;j<n2-1;j=j+1){
+    rightAry[j] = ary[q+j+1].val;
   }
   //infinity = 100
   leftAry[n1-1] = 100;
   rightAry[n2-1] = 100;
+
   i=0;j=0;
   for(k=p;k<=r;k++){
+    //console.log("p"+p);
+    //console.log("i"+i);
+    if(p+i < 8 && q+j+1<8){
+      takeSnapeShot(p+i,(q+j+1-p-i>n2-1)?(p+i):(q+j+1),1,array1);
+    }
+
     if(leftAry[i] <= rightAry[j])
-      ary[k] = leftAry[i++];
+      {
+        // switch (p+k) {
+        //   case 1:if(l==2){
+        //         ll = c21;
+        //   }
+        //   else if(l==1){
+        //         ll = c11;
+        //   }
+        //   else {
+        //         ll = c01;
+        //   }
+        //
+        //     break;
+        //     case 2:if(l==2){
+        //           ll = c22;
+        //     }
+        //     else if(l==1){
+        //           ll = c12;
+        //     }
+        //     else {
+        //           ll = c02;
+        //     }
+        //
+        //       break;case 3:if(l==2){
+        //             ll = c23;
+        //       }
+        //       else if(l==1){
+        //             ll = c13;
+        //       }
+        //       else {
+        //             ll = c03;
+        //       }
+        //
+        //         break;case 4:if(l==2){
+        //               ll = c24;
+        //         }
+        //         else if(l==1){
+        //               ll = c14;
+        //         }
+        //         else {
+        //               ll = c04;
+        //         }
+        //
+        //           break;case 5:if(l==2){
+        //                 ll = c25;
+        //           }
+        //           else if(l==1){
+        //                 ll = c15;
+        //           }
+        //           else {
+        //                 ll = c05;
+        //           }
+        //
+        //             break;case 6:if(l==2){
+        //                   ll = c26;
+        //             }
+        //             else if(l==1){
+        //                   ll = c16;
+        //             }
+        //             else {
+        //                   ll = c06;
+        //             }
+        //
+        //               break;case 7:if(l==2){
+        //                     ll = c27;
+        //               }
+        //               else if(l==1){
+        //                     ll = c17;
+        //               }
+        //               else {
+        //                     ll = c07;
+        //               }
+        //               case 8:if(l==2){
+        //                     ll = c28;
+        //               }
+        //               else if(l==1){
+        //                     ll = c18;
+        //               }
+        //               else {
+        //                     ll = c08;
+        //               }
+        //
+        //                 break;
+        //   default:
+        //
+        // }
+        if(l==2){
+          switch (k+1) {
+            case 1:{
+                ll = c21;
+              break;
+            }
+
+            case 2:{
+                ll = c22;
+              break;
+            }
+            case 3:{
+                ll = c23;
+              break;
+            }
+            case 4:{
+                ll = c24;
+              break;
+            }
+            case 5:{
+                ll = c25;
+              break;
+            }
+            case 6:{
+                ll = c26;
+              break;
+            }
+            case 7:{
+                ll = c27;
+              break;
+            }
+            case 8:{
+                ll = c28;
+              break;
+            }
+
+            default:
+
+          }
+        }
+        if(l==1){
+          switch (k+1) {
+            case 1:{
+                ll = c11;
+              break;
+            }
+
+            case 2:{
+                ll = c12;
+              break;
+            }
+            case 3:{
+                ll = c13;
+              break;
+            }
+            case 4:{
+                ll = c14;
+              break;
+            }
+            case 5:{
+                ll = c15;
+              break;
+            }
+            case 6:{
+                ll = c16;
+              break;
+            }
+            case 7:{
+                ll = c17;
+              break;
+            }
+            case 8:{
+                ll = c18;
+              break;
+            }
+
+            default:
+
+          }
+        }
+        if(l==0){
+          switch (k+1) {
+            case 1:{
+                ll = c01;
+              break;
+            }
+
+            case 2:{
+                ll = c02;
+              break;
+            }
+            case 3:{
+                ll = c03;
+              break;
+            }
+            case 4:{
+                ll = c04;
+              break;
+            }
+            case 5:{
+                ll = c05;
+              break;
+            }
+            case 6:{
+                ll = c06;
+              break;
+            }
+            case 7:{
+                ll = c07;
+              break;
+            }
+            case 8:{
+                ll = c08;
+              break;
+            }
+
+            default:
+
+          }
+        }
+        array2 = JSON.parse(JSON.stringify(array1));
+        if(p+i < 8 && q+j+1<9){
+          takeSnapeShot(p+i,p+i,1,array2);
+        }
+
+        var instr = new instruction(array1[p+i],ll);
+        ////console.log(p+i);
+        program.push(instr);
+
+
+
+        //levelEl[l]=levelEl[l]+1;
+        ary[k].val = leftAry[i];
+        ary[k].x = ll.x;
+        ary[k].y = ll.y;
+
+        takeSnapeShot(p+i,p+i,1,JSON.parse(JSON.stringify(ary)));
+
+        i=i+1;
+
+        //var c = "c2"+l
+      }
     else {
-      ary[k] = rightAry[j++];
+      //switch (q+k+1) {
+      //   case 1:if(l==2){
+      //         ll = c21;
+      //   }
+      //   else if(l==1){
+      //         ll = c11;
+      //   }
+      //   else {
+      //         ll = c01;
+      //   }
+      //
+      //     break;
+      //     case 2:if(l==2){
+      //           ll = c22;
+      //     }
+      //     else if(l==1){
+      //           ll = c12;
+      //     }
+      //     else {
+      //           ll = c02;
+      //     }
+      //
+      //       break;case 3:if(l==2){
+      //             ll = c23;
+      //       }
+      //       else if(l==1){
+      //             ll = c13;
+      //       }
+      //       else {
+      //             ll = c03;
+      //       }
+      //
+      //         break;case 4:if(l==2){
+      //               ll = c24;
+      //         }
+      //         else if(l==1){
+      //               ll = c14;
+      //         }
+      //         else {
+      //               ll = c04;
+      //         }
+      //
+      //           break;case 5:if(l==2){
+      //                 ll = c25;
+      //           }
+      //           else if(l==1){
+      //                 ll = c15;
+      //           }
+      //           else {
+      //                 ll = c05;
+      //           }
+      //
+      //             break;case 6:if(l==2){
+      //                   ll = c26;
+      //             }
+      //             else if(l==1){
+      //                   ll = c16;
+      //             }
+      //             else {
+      //                   ll = c06;
+      //             }
+      //
+      //               break;case 7:if(l==2){
+      //                     ll = c27;
+      //               }
+      //               else if(l==1){
+      //                     ll = c17;
+      //               }
+      //               else {
+      //                     ll = c07;
+      //               }
+      //               case 8:if(l==2){
+      //                     ll = c28;
+      //               }
+      //               else if(l==1){
+      //                     ll = c18;
+      //               }
+      //               else {
+      //                     ll = c08;
+      //               }
+      //
+      //                 break;
+      //   default:
+      //
+      // }
+
+      if(l==2){
+        switch (k+1) {
+          case 1:{
+              ll = c21;
+            break;
+          }
+
+          case 2:{
+              ll = c22;
+            break;
+          }
+          case 3:{
+              ll = c23;
+            break;
+          }
+          case 4:{
+              ll = c24;
+            break;
+          }
+          case 5:{
+              ll = c25;
+            break;
+          }
+          case 6:{
+              ll = c26;
+            break;
+          }
+          case 7:{
+              ll = c27;
+            break;
+          }
+          case 8:{
+              ll = c28;
+            break;
+          }
+
+          default:
+
+        }
+      }
+      if(l==1){
+        switch (k+1) {
+          case 1:{
+              ll = c11;
+            break;
+          }
+
+          case 2:{
+              ll = c12;
+            break;
+          }
+          case 3:{
+              ll = c13;
+            break;
+          }
+          case 4:{
+              ll = c14;
+            break;
+          }
+          case 5:{
+              ll = c15;
+            break;
+          }
+          case 6:{
+              ll = c16;
+            break;
+          }
+          case 7:{
+              ll = c17;
+            break;
+          }
+          case 8:{
+              ll = c18;
+            break;
+          }
+
+          default:
+
+        }
+      }
+      if(l==0){
+        switch (k+1) {
+          case 1:{
+              ll = c01;
+            break;
+          }
+
+          case 2:{
+              ll = c02;
+            break;
+          }
+          case 3:{
+              ll = c03;
+            break;
+          }
+          case 4:{
+              ll = c04;
+            break;
+          }
+          case 5:{
+              ll = c05;
+            break;
+          }
+          case 6:{
+              ll = c06;
+            break;
+          }
+          case 7:{
+              ll = c07;
+            break;
+          }
+          case 8:{
+              ll = c08;
+            break;
+          }
+
+          default:
+
+        }
+      }
+
+      array2 = JSON.parse(JSON.stringify(array1));
+      if(p+i < 8 && q+j+1<9){
+        takeSnapeShot(q+j+1,q+j+1,1,array2);
+      }
+
+      var instr = new instruction(array1[q+j+1],ll);
+      //console.log(q+j+1);
+      program.push(instr);
+
+
+
+      ary[k].val = rightAry[j];
+      ary[k].x = ll.x;
+      ary[k].y = ll.y;
+
+      takeSnapeShot(q+j+1,q+j+1,1,JSON.parse(JSON.stringify(ary)));
+
+
+      count=count+1;
+      if(count == 9){
+        count = 1;
+
+      }
+
+
+      j=j+1;
+      //var c = "c2"+l;
+
+
     }
   }
+  array1 = JSON.parse(JSON.stringify(ary));
+}
+var snapShots = [];
+function takeSnapeShot(index1,index2,col,aay1){
+  //array1 = JSON.parse(JSON.stringify(array0));
+  for(var i = 0 ; i < aay1.length ;i=i+1){
+    if(i!=index1 && i!= index2){
+      aay1[i].col = 1;
+      //array2[i].col = 1;
+    }
+
+  if(index1 < 8 && index2< 9){
+  aay1[index1].col = (col);
+  aay1[index2].col = (col);}
+  // array2[index2].col = col;
+  // array2[index1].col = col;
+}
+  snapShots.push(JSON.parse(JSON.stringify(aay1)));
 }
 
-function instruction(op,args){
-  this.op = op;
-  this.args = args;
+function instruction(e,c){
+  this.el = e;
+  this.loc = c;
 }

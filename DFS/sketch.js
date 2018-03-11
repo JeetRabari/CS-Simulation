@@ -1,10 +1,12 @@
+//bkcol='#fca4a4',nodcol='#a31b30',canvascol='#f4cbcb';
+//bfsarr=dfsarr,que=stack
 var b_place,i_v1,i_v2,b_adde,b_edg,b_reset,b_nstep,b_pstep;
 var totnods,maxnods,totedg,maxedg,count,step;
-var bkcol='#d6a7d3',nodcol='#7a2d74';
-var canvascol='#e8d7e7',canvasx=30,canvasy=30,canvasw=800,canvash=500;
+var bkcol='#ef7c8d',nodcol='#a31b30';
+var canvascol='#f4cbcb',canvasx=30,canvasy=30,canvasw=800,canvash=500;
 var mainarr,disparr,msg=[],msgflag,place;
-var bfsarr,queue,visited;
-var vhl,qhl,edghl,next,nexttot;
+var dfsarr,stack,visited;
+var vhl,shl,edghl,next,nexttot;
 
 msg[0]='';
 msg[1]='*INVALID INPUT';
@@ -68,13 +70,15 @@ function draw(){
   text('VISITED NODE: ',canvasw+canvasx+canvasx,360);
   fill('#341835');
   ellipse(canvasw+canvasx+210,360,40,40);
-  fill('#7a2d74');
+  fill('#a31b30');
   ellipse(canvasw+canvasx+210,360,28,28);
-
+  
   fill(0);
-  text('QUEUE: '+qhl[step],canvasw+canvasx+canvasx,400);
-  if(vhl)
-  text('BFS: '+vhl[step],canvasw+88,430);
+  if(shl[step].length==0)
+    text('STACK: '+shl[step],canvasw+canvasx+canvasx,400);
+  else
+    text('STACK: '+shl[step]+' <-- top',canvasw+canvasx+canvasx,400);
+  text('DFS: '+vhl[step],canvasw+88,430);
   
   fill(canvascol);
   rect(canvasx,canvasy,canvasw,canvash,20);
@@ -83,7 +87,7 @@ function draw(){
     fill(nodcol);
     ellipse(mouseX,mouseY,50,50);
   }
-  
+  //stroke(128);
   strokeWeight(4);
   for(var i=0;i<totnods;i++){
     for(var j=0;j<i+1;j++){
@@ -130,8 +134,8 @@ function nodesplaced(){
   }
   totnods=count;
   b_place.attribute('disabled','');
-  b_edg.removeAttribute('disabled');
   b_adde.removeAttribute('disabled');
+  b_edg.removeAttribute('disabled');
   count=0;
   place=false;
   msgflag=0;
@@ -148,8 +152,8 @@ function mouseClicked(){
       count=0;
       totnods=maxnods;
       b_place.attribute('disabled','');
-      b_edg.removeAttribute('disabled');
       b_adde.removeAttribute('disabled');
+      b_edg.removeAttribute('disabled');
       msgflag=3;//max node limit
     }
   }
@@ -163,7 +167,9 @@ function defedgs(){
   step=0;
   msgflag=0;
   b_edg.attribute('disabled','');
-  traverseBFS();
+  traverseDFS(0);
+  nexttot=next;
+  next=0;
 }
 
 function addedge(){
@@ -194,45 +200,31 @@ function addedge(){
   }
 }
 
-function traverseBFS(){
-  var i,k;
-  queue.push(0);
-  bfsarr.push(0);
+function traverseDFS(val){
+  stack.push(val); 
 
-  qhl[next]=queue.slice();   
-  edghl[next]=edghl[next].slice(); 
-  vhl[next++]=bfsarr.slice();
+  var i=stack.pop();
+  stack.push(i);
+  dfsarr.push(val);
 
-  while(queue.length!=0){
-    i=queue.shift();
-    visited[i]=true;
-    //queue.unshift(i);
+  shl[next]=stack.slice();
+  edghl[next]=edghl[next].slice();
+  vhl[next++]=dfsarr.slice();
 
-    for(k=0;k<totnods;k++){
-      if(i!=k&&mainarr[i][k]==1&&!visited[k]){
-        queue.push(k);
-        bfsarr.push(k);
-        visited[k]=true;
-
-        edghl[next]=[i,k];
-        qhl[next]=queue.slice();
-        vhl[next]=bfsarr.slice();
-        next++;
-      }
+  visited[val]=true;
+  for(var j=0;j<totnods;j++){
+    if(i!=j&&mainarr[val][j]==1&&visited[j]==false){
+      edghl[next]=[i,j];
+      traverseDFS(j);
     }
-    //var x=queue.shift();
-
-    qhl[next]=queue.slice();
-    edghl[next]=edghl[next].slice(); 
-    vhl[next++]=bfsarr.slice();
   }
+  var x=stack.pop();
 
-  qhl[next]=queue.slice();
-  vhl[next]=bfsarr.slice();
-  edghl[next]=edghl[next].slice(); 
+  shl[next]=stack.slice();
+  edghl[next]=edghl[next].slice();
+  vhl[next++]=dfsarr.slice();
 
-  nexttot=next;
-  next=0;
+  return;
 }
 
 function nstep(){
@@ -258,13 +250,13 @@ function reset(){
   place=true;
   mainarr=[];
   disparr=[];
-  bfsarr=[];
-  queue=[];
+  dfsarr=[];
+  stack=[];
   visited=[];
   next=0;
   nexttot=0;
   vhl=[];
-  qhl=[];
+  shl=[];
   edghl=[];
 
   for(var i=0;i<maxnods;i++){
@@ -284,7 +276,7 @@ function reset(){
 
   for(var i=0;i<100;i++){
     vhl[i]=[];
-    qhl[i]=[];
+    shl[i]=[];
     edghl[i]=[];
   }
 
